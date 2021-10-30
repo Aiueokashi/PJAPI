@@ -1,16 +1,22 @@
 const express = require('express');
+const cron = require('node-cron');
+var git = require( 'simple-git' );
+var fs = require( 'fs' );
+var path = require( 'path' );
+
 const app = express();
 const axios = require('axios');
-function isAuthorized(req,res, next) {
-  const auth = req.headers.authorization;
-  if (process.env.PASS.includes === auth) {
-    next();
-  } else {
-    res.status(401);
-    res.send('Not permitted');
-  }
-}
 const port = 3000
+
+var git_url = 'https://github.com/Sekai-World/sekai-master-db-diff';
+var local_folder = 'docs';
+
+//git().clone(git_url,local_folder).then().catch(console.log)
+cron.schedule('* */1 * * *', () => {
+  git(local_folder).pull().then(()=>{console.log('done')})
+})
+
+app.use( express.static( __dirname + '/docs' ) );
 
 app.get('/', (req,res) => {
   res.json({ status:'failed', message:'You have to assign route'})
