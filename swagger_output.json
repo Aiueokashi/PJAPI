@@ -9,7 +9,8 @@
   "basePath": "/",
   "tags": [],
   "schemes": [
-    "https"
+    "https",
+    "http"
   ],
   "consumes": [],
   "produces": [],
@@ -33,6 +34,11 @@
         "parameters": [
           {
             "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "name",
             "in": "query",
             "type": "string"
           }

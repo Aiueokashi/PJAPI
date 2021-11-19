@@ -7,10 +7,14 @@ module.exports = function(app){
 
 app.get('/music', (req,res)=>{
   const id = +req.query.id;
+  const name = req.query.name;
   const musicAchv = require('./asset/musicAchievements.json');
   const musicList = require('./asset/musics.json');
   const musicDiff = require('./asset/musicDifficulties.json');
 
+  if(id&&name){
+   return res.status(404).json({status:'failed',message:'You cannot set both query'}); 
+  }
   if (id) {
     let misc = musicList.find(m => m.id == id)
     let achv = musicAchv.filter(m => m.musicAchievementType == 'combo')
@@ -26,6 +30,21 @@ app.get('/music', (req,res)=>{
       return res.status(200).json(json);
     }else{
       return res.status(404).json({ status:'failed',message:'this musicID does not exist'})
+    }
+  } else if(name){
+    let misc = musicList.find(m => m.title === name);
+    if(misc != undefined){
+    let achv = musicAchv.filter(m => m.musicAchievementType == 'combo');
+    let mdiff = musicDiff.filter(m => m.musicId == misc.id);
+    mdiff.forEach((m)=>{
+      let bnote = []
+      achv.filter(a=> a.musicDifficultyType == m.musicDifficulty).forEach(ad =>{
+        bnote.push(Math.ceil(m.noteCount*ad.musicAchievementTypeValue))})
+        m.bonusNotesCount = bnote
+      })
+      return res.status(200).json({ status:'success', musicList:misc, musicDiff: mdiff});
+    } else {
+      return res.status(404).json({ status:'failed',message:'this music name does not exist'})
     }
   } else {
     return res.status(404).json({ status:'failed',message:'you have to set query'})
@@ -108,7 +127,7 @@ app.get('/card', (req,res)=>{
      return res.status(404).json({ status:'failed',message:'this cardID does not exist'})
     }
   } else {
-    return res.status(200).json({ status:'success',cardRarity:require('./asset/cardRarities.json'), cardSkillCosts: require('../asset/cardSkillCosts')})
+    return res.status(200).json({ status:'success',cardRarity:require('./asset/cardRarities.json'), cardSkillCosts: require('./asset/cardSkillCosts')})
   }
 })
 

@@ -22,4 +22,4 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 require('./endpoints')(app)
 
 
-app.listen(port, () => console.log(`listening on port ${port}!`))
+app.listen(port, () => console.log(`listening on port ${port}!`));
